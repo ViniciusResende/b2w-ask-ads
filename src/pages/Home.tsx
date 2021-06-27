@@ -7,8 +7,10 @@ import { database } from '../services/firebase';
 import illustrationImg from '../assets/images/illustration.svg';
 import logoImg from '../assets/images/logo.svg';
 import googleIconImg from '../assets/images/google-icon.svg';
+import CircleX from '../assets/images/circle-x.svg';
 
 import Button from '../components/Button';
+import Modal from '../components/Modal';
 
 import '../styles/auth.scss';
 
@@ -17,6 +19,8 @@ const Home: React.FC = () => {
   const { user, signInWithGoogle } = useAuth();
 
   const [roomCode, setRoomCode] = useState('');
+  const [isNotExistingRoomModalOpen, setIsNotExistingRoomModalOpen] =
+    useState(false);
 
   async function handleCreateRoom() {
     if (!user) {
@@ -35,7 +39,7 @@ const Home: React.FC = () => {
     const roomRef = await database.ref(`rooms/${roomCode}`).get();
 
     if (!roomRef.exists()) {
-      alert('Room does not exists!');
+      setIsNotExistingRoomModalOpen(true);
       return;
     }
 
@@ -49,6 +53,14 @@ const Home: React.FC = () => {
 
   return (
     <div id='page-auth'>
+      <Modal
+        isOpen={isNotExistingRoomModalOpen}
+        icon={CircleX}
+        title='A sala não existe'
+        message='Por favor, verifique o código e tente novamente.'
+        onCancel={() => setIsNotExistingRoomModalOpen(false)}
+        noConfirmButtons
+      />
       <aside>
         <img
           src={illustrationImg}

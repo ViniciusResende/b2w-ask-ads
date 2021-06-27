@@ -25,8 +25,6 @@ const Room: React.FC = () => {
   const roomId = params.id;
   const { questions, title } = useRoom(roomId);
 
-  console.log('room questions', questions);
-
   const [newQuestion, setNewQuestion] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
 

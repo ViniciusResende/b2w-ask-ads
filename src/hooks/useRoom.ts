@@ -68,7 +68,7 @@ export function useRoom(roomId: string) {
 
       setTitle(databaseRoom.title);
       setAuthorId(databaseRoom.authorId);
-      setQuestions(parsedQuestions);
+      setQuestions(parsedQuestions.reverse());
     });
 
     return () => {

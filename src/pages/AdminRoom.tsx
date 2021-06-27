@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router-dom';
 
 import logoImg from '../assets/images/logo.svg';
 import emptyQuestions from '../assets/images/empty-questions.svg';
 import deleteImg from '../assets/images/delete.svg';
+import deleteImgRed from '../assets/images/delete-red.svg';
+import CircleX from '../assets/images/circle-x.svg';
 import checkImg from '../assets/images/check.svg';
 import answerImg from '../assets/images/answer.svg';
 
 import Button from '../components/Button';
+import Modal from '../components/Modal';
 import RoomCode from '../components/RoomCode';
 import Question from '../components/Question';
 import Loader from '../components/Loader';
@@ -29,7 +32,10 @@ const AdminRoom: React.FC = () => {
   const params = useParams<RoomParams>();
   const roomId = params.id;
   const { questions, title, authorId } = useRoom(roomId);
-  console.log('admin questions', questions);
+
+  const [isDeleteQuestionModalOpen, setIsDeleteQuestionModalOpen] =
+    useState(false);
+  const [isEndRoomModalOpen, setIsEndRoomModalOpen] = useState(false);
 
   useEffect(() => {
     if (authorId) {
@@ -44,13 +50,13 @@ const AdminRoom: React.FC = () => {
       endedAt: new Date(),
     });
 
+    setIsEndRoomModalOpen(false);
     history.push('/');
   }
 
   async function handleDeleteQuestion(questionId: string) {
-    if (window.confirm('Tem certeza que você deseja excluir esta pergunta?')) {
-      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
-    }
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+    setIsDeleteQuestionModalOpen(false);
   }
 
   async function handleCheckQuestionAsAnswered(questionId: string) {
@@ -72,9 +78,17 @@ const AdminRoom: React.FC = () => {
           <img src={logoImg} alt='Letmeask' />
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined onClick={handleEndRoom}>
+            <Button isOutlined onClick={() => setIsEndRoomModalOpen(true)}>
               Encerrar sala
             </Button>
+            <Modal
+              isOpen={isEndRoomModalOpen}
+              icon={CircleX}
+              title='Encerrar sala'
+              message='Tem certeza que você deseja encerrar esta sala?'
+              onCancel={() => setIsEndRoomModalOpen(false)}
+              onConfirm={handleEndRoom}
+            />
           </div>
         </div>
       </header>
@@ -133,9 +147,17 @@ const AdminRoom: React.FC = () => {
                       )}
                       <button
                         type='button'
-                        onClick={() => handleDeleteQuestion(question.id)}>
+                        onClick={() => setIsDeleteQuestionModalOpen(true)}>
                         <img src={deleteImg} alt='Remover pergunta' />
                       </button>
+                      <Modal
+                        isOpen={isDeleteQuestionModalOpen}
+                        icon={deleteImgRed}
+                        title='Excluir pergunta'
+                        message='Tem certeza que você deseja excluir essa pergunta?'
+                        onConfirm={() => handleDeleteQuestion(question.id)}
+                        onCancel={() => setIsDeleteQuestionModalOpen(false)}
+                      />
                     </Question>
                   ))}
                 </>
