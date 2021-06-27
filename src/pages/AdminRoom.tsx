@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router-dom';
 
 import logoImg from '../assets/images/logo.svg';
+import emptyQuestions from '../assets/images/empty-questions.svg';
 import deleteImg from '../assets/images/delete.svg';
 import checkImg from '../assets/images/check.svg';
 import answerImg from '../assets/images/answer.svg';
@@ -10,6 +11,7 @@ import answerImg from '../assets/images/answer.svg';
 import Button from '../components/Button';
 import RoomCode from '../components/RoomCode';
 import Question from '../components/Question';
+import Loader from '../components/Loader';
 import { useAuth } from '../hooks/useAuth';
 import { useRoom } from '../hooks/useRoom';
 import { database } from '../services/firebase';
@@ -26,7 +28,16 @@ const AdminRoom: React.FC = () => {
   const history = useHistory();
   const params = useParams<RoomParams>();
   const roomId = params.id;
-  const { questions, title } = useRoom(roomId);
+  const { questions, title, authorId } = useRoom(roomId);
+  console.log('admin questions', questions);
+
+  useEffect(() => {
+    if (authorId) {
+      if (user?.id !== authorId) {
+        history.push(`/rooms/${roomId}`);
+      }
+    }
+  }, [authorId]);
 
   async function handleEndRoom() {
     await database.ref(`rooms/${roomId}`).update({
@@ -69,41 +80,69 @@ const AdminRoom: React.FC = () => {
       </header>
 
       <main>
-        <div className='room-title'>
-          <h1>Sala {title}</h1>
-          {questions.length > 0 && <span>{questions.length} pergunta(s)</span>}
-        </div>
+        {!title ? (
+          <Loader />
+        ) : (
+          <>
+            <div className='room-title'>
+              <h1>Sala {title}</h1>
+              {questions.length > 0 && (
+                <span>{questions.length} pergunta(s)</span>
+              )}
+            </div>
 
-        <div className='question-list'>
-          {questions.map((question) => (
-            <Question
-              key={question.id}
-              content={question.content}
-              author={question.author}
-              isAnswered={question.isAnswered}
-              isHighlighted={question.isHighlighted}>
-              {!question.isAnswered && (
+            <div className='question-list'>
+              {questions.length === 0 ? (
+                <div className='no-questions'>
+                  <img src={emptyQuestions} alt='Ainda não há perguntas' />
+                  <span>Ainda não foram feitas perguntas.</span>
+                </div>
+              ) : (
                 <>
-                  <button
-                    type='button'
-                    onClick={() => handleCheckQuestionAsAnswered(question.id)}>
-                    <img src={checkImg} alt='Marcar pergunta como respondida' />
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => handleHighlightQuestion(question.id)}>
-                    <img src={answerImg} alt='Dar destaque à pergunta' />
-                  </button>
+                  {questions.map((question) => (
+                    <Question
+                      key={question.id}
+                      content={question.content}
+                      author={question.author}
+                      isAnswered={question.isAnswered}
+                      isHighlighted={question.isHighlighted}
+                      isAnonymous={question.isAnonymous}>
+                      {!question.isAnswered && (
+                        <>
+                          <button
+                            type='button'
+                            onClick={() =>
+                              handleCheckQuestionAsAnswered(question.id)
+                            }>
+                            <img
+                              src={checkImg}
+                              alt='Marcar pergunta como respondida'
+                            />
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() =>
+                              handleHighlightQuestion(question.id)
+                            }>
+                            <img
+                              src={answerImg}
+                              alt='Dar destaque à pergunta'
+                            />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        type='button'
+                        onClick={() => handleDeleteQuestion(question.id)}>
+                        <img src={deleteImg} alt='Remover pergunta' />
+                      </button>
+                    </Question>
+                  ))}
                 </>
               )}
-              <button
-                type='button'
-                onClick={() => handleDeleteQuestion(question.id)}>
-                <img src={deleteImg} alt='Remover pergunta' />
-              </button>
-            </Question>
-          ))}
-        </div>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

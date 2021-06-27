@@ -5,8 +5,8 @@
 }
 
 body {
-  background: #f8f8f8;
-  color: #29292e;
+  background: var(--gray-50);
+  color: var(--gray-900);
 }
 
 body,
@@ -14,4 +14,17 @@ input,
 button,
 textarea {
   font: 400 16px 'Roboto', sans-serif;
+}
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --red-500: #ea4335;
+  --green-500: #27ecd4;
+  --green-600: #49c5b1;
+  --green-700: #11b1a5;
+  --gray-50: #f8f8f8;
+  --gray-400: #a8a8b3;
+  --gray-500: #737380;
+  --gray-900: #29292e;
 }

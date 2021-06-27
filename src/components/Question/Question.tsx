@@ -1,7 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
 
-import '../styles/question.scss';
+import './question.scss';
+
+import AnonymousProfile from '../../assets/images/anonymous-user.png';
 
 type QuestionProps = {
   content: string;
@@ -10,8 +12,9 @@ type QuestionProps = {
     avatar: string;
   };
   children?: React.ReactNode;
-  isAnswered?: boolean;
-  isHighlighted?: boolean;
+  isAnswered: boolean;
+  isHighlighted: boolean;
+  isAnonymous: boolean;
 };
 
 const Question = ({
@@ -20,6 +23,7 @@ const Question = ({
   children,
   isAnswered = false,
   isHighlighted = false,
+  isAnonymous = false,
 }: QuestionProps) => {
   return (
     <div
@@ -31,8 +35,11 @@ const Question = ({
       <p>{content}</p>
       <footer>
         <div className='user-info'>
-          <img src={author.avatar} alt={author.name} />
-          <span>{author.name}</span>
+          <img
+            src={!isAnonymous ? author.avatar : AnonymousProfile}
+            alt={author.name}
+          />
+          <span>{!isAnonymous ? author.name : 'Autor Anônimo'}</span>
         </div>
         <div>{children}</div>
       </footer>

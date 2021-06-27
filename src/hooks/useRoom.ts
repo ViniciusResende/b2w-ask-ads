@@ -13,6 +13,7 @@ type FirebaseQuestions = Record<
     content: string;
     isAnswered: boolean;
     isHighlighted: boolean;
+    isAnonymous: boolean;
     likes: Record<
       string,
       {
@@ -31,6 +32,7 @@ type QuestionType = {
   content: string;
   isAnswered: boolean;
   isHighlighted: boolean;
+  isAnonymous: boolean;
   likeCount: number;
   likeId: string | undefined;
 };
@@ -38,7 +40,8 @@ type QuestionType = {
 export function useRoom(roomId: string) {
   const { user } = useAuth();
   const [questions, setQuestions] = useState<QuestionType[]>([]);
-  const [title, setTitle] = useState('string');
+  const [title, setTitle] = useState('');
+  const [authorId, setAuthorId] = useState('');
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`);
@@ -46,7 +49,6 @@ export function useRoom(roomId: string) {
     roomRef.on('value', (room) => {
       const databaseRoom = room.val();
       const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
-      console.log('firebaseQuestions', firebaseQuestions);
       const parsedQuestions = Object.entries(firebaseQuestions).map(
         ([key, value]) => {
           return {
@@ -55,6 +57,7 @@ export function useRoom(roomId: string) {
             author: value.author,
             isAnswered: value.isAnswered,
             isHighlighted: value.isHighlighted,
+            isAnonymous: value.isAnonymous,
             likeCount: Object.values(value.likes ?? {}).length,
             likeId: Object.entries(value.likes ?? {}).find(
               ([key, like]) => like.authorId === user?.id,
@@ -64,6 +67,7 @@ export function useRoom(roomId: string) {
       );
 
       setTitle(databaseRoom.title);
+      setAuthorId(databaseRoom.authorId);
       setQuestions(parsedQuestions);
     });
 
@@ -72,5 +76,5 @@ export function useRoom(roomId: string) {
     };
   }, [roomId, user?.id]);
 
-  return { questions, title };
+  return { questions, title, authorId };
 }
