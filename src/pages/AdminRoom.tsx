@@ -31,7 +31,7 @@ const AdminRoom: React.FC = () => {
   const history = useHistory();
   const params = useParams<RoomParams>();
   const roomId = params.id;
-  const { questions, title, authorId } = useRoom(roomId);
+  const { questions, title, authorId, roomClosed } = useRoom(roomId);
 
   const [isDeleteQuestionModalOpen, setIsDeleteQuestionModalOpen] =
     useState(false);
@@ -51,7 +51,6 @@ const AdminRoom: React.FC = () => {
     });
 
     setIsEndRoomModalOpen(false);
-    history.push('/');
   }
 
   async function handleDeleteQuestion(questionId: string) {
@@ -75,10 +74,13 @@ const AdminRoom: React.FC = () => {
     <div id='page-room'>
       <header>
         <div className='content'>
-          <img src={logoImg} alt='Letmeask' />
+          <img src={logoImg} alt='askads' onClick={() => history.push('/')} />
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined onClick={() => setIsEndRoomModalOpen(true)}>
+            <Button
+              isOutlined
+              onClick={() => setIsEndRoomModalOpen(true)}
+              disabled={roomClosed}>
               Encerrar sala
             </Button>
             <Modal

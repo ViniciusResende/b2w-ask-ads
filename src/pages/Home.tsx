@@ -44,11 +44,17 @@ const Home: React.FC = () => {
     }
 
     if (roomRef.val().endedAt) {
-      alert('Room already closed.');
+      history.push({
+        pathname: `/rooms/${roomCode}`,
+        state: { closedRoom: true },
+      });
       return;
     }
 
-    history.push(`/rooms/${roomCode}`);
+    history.push({
+      pathname: `/rooms/${roomCode}`,
+      state: { closedRoom: false },
+    });
   }
 
   return (

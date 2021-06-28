@@ -1,5 +1,5 @@
-import React, { FormEvent, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { FormEvent, useState, useEffect } from 'react';
+import { useParams, useLocation, useHistory } from 'react-router';
 
 import logoImg from '../assets/images/logo.svg';
 import emptyQuestions from '../assets/images/empty-questions.svg';
@@ -18,15 +18,30 @@ type RoomParams = {
   id: string;
 };
 
+type LocationProps = {
+  state: {
+    closedRoom: boolean;
+  };
+};
+
 const Room: React.FC = () => {
   const { user } = useAuth();
+  const history = useHistory();
+  const location: LocationProps = useLocation();
 
   const params = useParams<RoomParams>();
   const roomId = params.id;
-  const { questions, title } = useRoom(roomId);
+  const { questions, title, roomClosed } = useRoom(roomId);
 
   const [newQuestion, setNewQuestion] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isRoomClosed, setIsRoomClosed] = useState(
+    location.state?.closedRoom || false,
+  );
+
+  useEffect(() => {
+    setIsRoomClosed(roomClosed);
+  }, [roomClosed]);
 
   async function handleSendQuestion(event: FormEvent) {
     event.preventDefault();
@@ -74,7 +89,7 @@ const Room: React.FC = () => {
     <div id='page-room'>
       <header>
         <div className='content'>
-          <img src={logoImg} alt='Letmeask' />
+          <img src={logoImg} alt='askads' onClick={() => history.push('/')} />
           <RoomCode code={roomId} />
         </div>
       </header>
@@ -91,46 +106,48 @@ const Room: React.FC = () => {
               )}
             </div>
 
-            <form onSubmit={handleSendQuestion}>
-              <textarea
-                placeholder='O que você quer pergunar?'
-                onChange={(event) => {
-                  setNewQuestion(event.target.value);
-                }}
-                value={newQuestion}
-              />
-
-              <label htmlFor='anonymous' className='checkbox-container'>
-                Pergunta anônima?
-                <input
-                  type='checkbox'
-                  id='anonymous'
-                  name='anonymous'
-                  value='anonymous'
-                  onClick={() => {
-                    setIsAnonymous((prev) => !prev);
+            {!isRoomClosed && (
+              <form onSubmit={handleSendQuestion}>
+                <textarea
+                  placeholder='O que você quer pergunar?'
+                  onChange={(event) => {
+                    setNewQuestion(event.target.value);
                   }}
-                  checked={isAnonymous}
+                  value={newQuestion}
                 />
-                <span className='checkmark' />
-              </label>
 
-              <div className='form-footer'>
-                {user ? (
-                  <div className='user-info'>
-                    <img src={user.avatar} alt={user.name} />
-                    <span>{user.name}</span>
-                  </div>
-                ) : (
-                  <span>
-                    Para enviar uma pergunta, <button>faça seu login</button>.
-                  </span>
-                )}
-                <Button type='submit' disabled={!user}>
-                  Enviar Pergunta
-                </Button>
-              </div>
-            </form>
+                <label htmlFor='anonymous' className='checkbox-container'>
+                  Pergunta anônima?
+                  <input
+                    type='checkbox'
+                    id='anonymous'
+                    name='anonymous'
+                    value='anonymous'
+                    onClick={() => {
+                      setIsAnonymous((prev) => !prev);
+                    }}
+                    checked={isAnonymous}
+                  />
+                  <span className='checkmark' />
+                </label>
+
+                <div className='form-footer'>
+                  {user ? (
+                    <div className='user-info'>
+                      <img src={user.avatar} alt={user.name} />
+                      <span>{user.name}</span>
+                    </div>
+                  ) : (
+                    <span>
+                      Para enviar uma pergunta, <button>faça seu login</button>.
+                    </span>
+                  )}
+                  <Button type='submit' disabled={!user}>
+                    Enviar Pergunta
+                  </Button>
+                </div>
+              </form>
+            )}
             <div className='question-list'>
               {questions.length === 0 ? (
                 <div className='no-questions'>
