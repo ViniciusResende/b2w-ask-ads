@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { useHistory } from 'react-router-dom';
 
 import logoImg from '../assets/images/logo.svg';
+import logoImgDark from '../assets/images/logo-dark.svg';
 import emptyQuestions from '../assets/images/empty-questions.svg';
 import deleteImg from '../assets/images/delete.svg';
 import deleteImgRed from '../assets/images/delete-red.svg';
@@ -16,6 +17,7 @@ import RoomCode from '../components/RoomCode';
 import Question from '../components/Question';
 import Loader from '../components/Loader';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import { useRoom } from '../hooks/useRoom';
 import { database } from '../services/firebase';
 
@@ -26,6 +28,8 @@ type RoomParams = {
 };
 
 const AdminRoom: React.FC = () => {
+  const { isInDarkTheme } = useTheme();
+
   const { user } = useAuth();
 
   const history = useHistory();
@@ -74,7 +78,11 @@ const AdminRoom: React.FC = () => {
     <div id='page-room'>
       <header>
         <div className='content'>
-          <img src={logoImg} alt='askads' onClick={() => history.push('/')} />
+          <img
+            src={isInDarkTheme ? logoImgDark : logoImg}
+            alt='askads'
+            onClick={() => history.push('/')}
+          />
           <div>
             <RoomCode code={roomId} />
             <Button

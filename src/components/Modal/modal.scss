@@ -25,7 +25,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  min-width: 300px;
+  min-width: 400px;
   gap: 16px;
 
   background: var(--white);
@@ -43,6 +43,7 @@
   }
 
   > h3 {
+    color: var(--black);
     font: 700 24px 'Poppins', sans-serif;
   }
 

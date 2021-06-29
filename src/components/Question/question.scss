@@ -1,5 +1,5 @@
 .question {
-  background: #fefefe;
+  background: var(--question-background);
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: 24px;
@@ -9,20 +9,24 @@
   }
 
   &.highlighted {
-    background: #f2fcfb;
+    background: var(--highlight);
     border: 1px solid var(--green-500);
 
     footer .user-info span {
-      color: #29292e;
+      color: var(--question-text);
     }
   }
 
   &.answered {
+    p {
+      color: var(--gray-900);
+    }
+
     background: #dbdcdd;
   }
 
   p {
-    color: var(--gray-900);
+    color: var(--question-text);
   }
 
   footer {

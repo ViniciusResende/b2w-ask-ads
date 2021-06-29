@@ -16,8 +16,11 @@ textarea {
   font: 400 16px 'Roboto', sans-serif;
 }
 
-:root {
+.app-wrapper {
   --white: #fff;
+  --highlight: #f2fcfb;
+  --question-background: #fefefe;
+  --question-text: #29292e;
   --black: #000;
   --red-500: #ea4335;
   --green-500: #27ecd4;
@@ -28,4 +31,21 @@ textarea {
   --gray-400: #a8a8b3;
   --gray-500: #737380;
   --gray-900: #29292e;
+
+  &.dark {
+    --white: #000;
+    --highlight: #8a8a8a;
+    --question-background: #302f2f;
+    --question-text: #dadada;
+    --black: #fff;
+    --red-500: #ea4335;
+    --green-500: #11b1a5;
+    --green-600: #49c5b1;
+    --green-700: #27ecd4;
+    --gray-50: #414141;
+    --gray-200: #dadada;
+    --gray-400: #a8a8b3;
+    --gray-500: #737380;
+    --gray-900: #29292e;
+  }
 }

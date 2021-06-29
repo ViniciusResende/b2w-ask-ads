@@ -2,6 +2,7 @@ import React, { FormEvent, useState, useEffect } from 'react';
 import { useParams, useLocation, useHistory } from 'react-router';
 
 import logoImg from '../assets/images/logo.svg';
+import logoImgDark from '../assets/images/logo-dark.svg';
 import emptyQuestions from '../assets/images/empty-questions.svg';
 
 import Button from '../components/Button';
@@ -9,6 +10,7 @@ import RoomCode from '../components/RoomCode';
 import Question from '../components/Question';
 import Loader from '../components/Loader';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import { useRoom } from '../hooks/useRoom';
 import { database } from '../services/firebase';
 
@@ -25,6 +27,8 @@ type LocationProps = {
 };
 
 const Room: React.FC = () => {
+  const { isInDarkTheme } = useTheme();
+
   const { user } = useAuth();
   const history = useHistory();
   const location: LocationProps = useLocation();
@@ -89,7 +93,11 @@ const Room: React.FC = () => {
     <div id='page-room'>
       <header>
         <div className='content'>
-          <img src={logoImg} alt='askads' onClick={() => history.push('/')} />
+          <img
+            src={isInDarkTheme ? logoImgDark : logoImg}
+            alt='askads'
+            onClick={() => history.push('/')}
+          />
           <RoomCode code={roomId} />
         </div>
       </header>
@@ -109,7 +117,7 @@ const Room: React.FC = () => {
             {!isRoomClosed && (
               <form onSubmit={handleSendQuestion}>
                 <textarea
-                  placeholder='O que você quer pergunar?'
+                  placeholder='O que você quer perguntar?'
                   onChange={(event) => {
                     setNewQuestion(event.target.value);
                   }}
